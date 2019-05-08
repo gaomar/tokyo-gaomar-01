@@ -1,0 +1,498 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>東京がおまる塾 Alexaスキル開発ハンズオン ～Amazon Connect連携編～</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="dist"
+                  title="東京がおまる塾 Alexaスキル開発ハンズオン ～Amazon Connect連携編～"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="リソースを作成する" duration="0">
+        <h2 is-upgraded>1-1. リソースを作成する</h2>
+<p>AWSにアクセスし、お持ちのAWSアカウントでログインします。<br><a href="https://aws.amazon.com/jp/" target="_blank">https://aws.amazon.com/jp/</a></p>
+<p>コンソール画面が開いたら、サービス検索から【Amazon Connect】と入力して検索します。<br>出てきた［Amazon Connect］をクリックします。</p>
+<p class="image-container"><img alt="s100" src="img/623437cb60a66c9.png"></p>
+<p>［今すぐ始める］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s101" src="img/e0a617ae3e06ccea.png"></p>
+<p>東京リージョンになっているか確認してください。<br>なっていない方は右上から「<strong>アジアパシフィック（東京）</strong>」を選択します。</p>
+<p class="image-container"><img alt="s102" src="img/c3340a3409094ce4.png"></p>
+<p>アクセスURLに今回使用するための名前を決めます。</p>
+<p>［tokyo-gaomar-{今日の日付}-{連番}］という感じで他の人と被らないような名前にします。</p>
+<p class="image-container"><img alt="s103" src="img/ab3fdca8076f37f0.png"></p>
+<p>ステップ２の管理者の作成は後でできるので、「これをスキップ」を選択してから、［次のステップ］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s104" src="img/82853d40b9750f70.png"></p>
+<p>ステップ３のテレフォニーオプションもそのまま何もせず［次のステップ］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s105" src="img/e10e25d145e0920b.png"></p>
+<p>ステップ４のデータストレージもそのまま［次のステップ］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s106" src="img/2595eaa8f9bdfa9e.png"></p>
+<p>ステップ５で最終確認をして問題なければ［インスタンスの作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s107" src="img/ad04c4cd2465dc02.png"></p>
+<p>1〜2分ほど作成に時間がかかります。</p>
+<p class="image-container"><img alt="s108" src="img/bc8b87565a47297.png"></p>
+<p>成功すれば、［今すぐ始める］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s109" src="img/dfd5b9f0f7df90fb.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="電話番号を取得しよう！" duration="0">
+        <h2 is-upgraded>2-1.電話番号を取得する</h2>
+<p>Amazon Connect専用の電話番号を手に入れます。<br>別のタブでAmazon Connect用の画面が表示されるので、そこに表示されている［今すぐ始める］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s110" src="img/c754d8ea4d7c8f12.png"></p>
+<p>電話番号の取得で、国は<code>Japan +81</code>を選択します。</p>
+<p class="image-container"><img alt="s111" src="img/6feb8f7705092c68.png"></p>
+<p>次のタイプは2種類あります。お好きな方を選んでください。</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p>Direct Dial</p>
+</td><td colspan="1" rowspan="1"><p>050番号が取得できる。発信者が通話料負担する。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Toll Free</p>
+</td><td colspan="1" rowspan="1"><p>0800番号が取得できる。発信者の通話料無料（フリーダイヤル）開発者が負担する。</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="s112" src="img/e7c35a29023b04d6.png"></p>
+<p>最後にお好きな番号を選択して、［次へ］ボタンをクリックします。</p>
+<p>※ <strong>取得した番号はメモしておきましょう</strong></p>
+<p class="image-container"><img alt="s113" src="img/619f6fc26afe1d59.png"></p>
+<p>［Continue］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s114" src="img/44dccce5be242492.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="問い合わせフローを作成しよう！" duration="0">
+        <h2 is-upgraded>3-1.問い合わせフローを作成する</h2>
+<p>左メニューのルーティングから問い合わせフローをクリックします。</p>
+<p class="image-container"><img alt="s115" src="img/d5c923b8e0b6b31.png"></p>
+<p>［問い合わせフローの作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s116" src="img/2cd736cbdf523c2b.png"></p>
+<p>問い合わせフローの名前を最初に設定しておきます。今回は <strong>APLフロー</strong> としました。</p>
+<p class="image-container"><img alt="s117" src="img/bc65489c5b53f8cb.png"></p>
+<h2 is-upgraded>3-2.フローエディタに触れる</h2>
+<p>フローエディタを触っていきます。</p>
+<p>左メニューの設定カテゴリを展開して、その中にある「音声の設定」をフローエディタにドラッグアンドドロップします。ドロップしたメニューをクリックします。</p>
+<p class="image-container"><img alt="s118" src="img/7852210b67019fb5.png"></p>
+<p>音声の設定で、言語は<strong>日本語</strong>を選択します。</p>
+<p class="image-container"><img alt="s119" src="img/24fccb2db360a451.png"></p>
+<p>音声は男性の声なら<code>Takumi</code>で女性の声なら<code>Mizuki</code>を選択します。お好きな方を選択してください。右下の［Save］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s120" src="img/fda82c26f276e088.png"></p>
+<p>ブロックを繋いでいきます。エントリポイントの右にある○をクリックして引っ張ります。<br>そのまま出っ張っている部分に繋ぎます。<br>直感的に繋いていけるので初心者でも簡単に作ることができます。</p>
+<p class="image-container"><img alt="s121" src="img/d099fae8e717951.png"></p>
+<p>操作カテゴリにあるプロンプトの再生ブロックをフローエディタにドラッグアンドドロップします。ドロップしたら、そのブロックをクリックします。</p>
+<p class="image-container"><img alt="s122" src="img/e8ffab4067bdf8b5.png"></p>
+<p>テキスト読み上げ機能（アドホック）を選択し、テキストを入力します。</p>
+<pre><code>&lt;speak&gt;
+  &lt;break time=&#39;2s&#39; /&gt;
+  アレクサから呼び出されたよ。APLは楽しいね！では、さようなら
+&lt;/speak&gt;
+</code></pre>
+<p>解釈する部分はプルダウンメニューから<code>SSML</code>を選択します。最後に［Save］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s123" src="img/aa75668bab45829e.png"></p>
+<p>ブロックを繋いでいきます。</p>
+<p class="image-container"><img alt="s124" src="img/37b07f2c264d32b5.png"></p>
+<p>終了/転送カテゴリにある、切断/ハングアップのブロックをドラッグアンドドロップします。</p>
+<p class="image-container"><img alt="s125" src="img/436f17ed9f8ee314.png"></p>
+<p>線で結んでから、右上の下向き▼をクリックして、［保存して発行］をクリックします。</p>
+<p class="image-container"><img alt="s126" src="img/f9f98ef8792ca8f1.png"></p>
+<p><strong>追加のフロー情報の表示</strong>部分を展開して、下線部の赤い部分のインスタンスIDと下線部の青い部分のコンタクトフローIDをそれぞれメモしておきます。</p>
+<p class="image-container"><img alt="s127" src="img/38a46c6f2109a634.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Alexaスキルを作成しよう！" duration="0">
+        <h2 is-upgraded>4-1. Alexaスキルを新規作成する</h2>
+<p><a href="https://developer.amazon.com/alexa/console/ask?" target="_blank">こちら</a>からログインしてください。ログインしたら、［スキルの作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s200" src="img/85ca619345d0e8ee.png"></p>
+<p>スキル名はお好きな名前を設定します。モデルは「カスタム」で、「独自のプロビジョニング」を選択します。右上の［スキルを作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s201" src="img/a70cde0cc7690473.png"></p>
+<p>呼び出し名の部分をクリックします。呼び出し名はお好きな名前を入力してください。呼び出し名が設定できたら、［モデルを保存］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s202" src="img/51c6a22a79d6b23d.png"></p>
+<p>インターフェースをクリックします。その中にある「Displayインターフェース」と「Alexa Presentation Language」を有効にします。設定できたら［インターフェースを保存］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s203" src="img/8fcc7807da5cd8ca.png"></p>
+<h2 is-upgraded>4-2. インテントを作成する</h2>
+<p>左側メニューのインテントにある［＋追加］をクリックします。インテント名を<code>CallIntent</code>と入力し、［カスタムインテントを作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s204" src="img/5c31899d34960111.png"></p>
+<p>サンプル発話に「電話をかけて」と入力して、［モデルを保存］と［モデルをビルド］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s205" src="img/f093d0400b3956b6.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Lambda関数を作成しよう！" duration="0">
+        <h2 is-upgraded>5-1. Lambdaレイヤーを作成する</h2>
+<p>AWSにログインして、サービスから<code>Lambda</code>を検索して［Lambda］をクリックします。</p>
+<p class="image-container"><img alt="s206" src="img/29f6a6634fd41def.png"></p>
+<p>Lambdaレイヤーと呼ばれる機能があります。予め使用するライブラリ群をアップロードしておいて、必要なライブラリをレイヤー単位でLambda関数に適用することができます。</p>
+<p>左側メニューの<code>Layers</code>から［レイヤーの作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s207" src="img/236ee53f0f138b20.png"></p>
+<p>各項目を埋めていきます。linebot.zipは下記からダウンロードしてください。<br><a href="https://github.com/gaomar/tokyo-gaomar-01/raw/master/files/ask-sdk.zip" target="_blank">https://github.com/gaomar/tokyo-gaomar-01/raw/master/files/ask-sdk.zip</a></p>
+<p>［作成］ボタンをクリックします。</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>ASK-SDK</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>説明</p>
+</td><td colspan="1" rowspan="1"><p>ASK-SDK</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>アップロード</p>
+</td><td colspan="1" rowspan="1"><p>ask-sdk.zip</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ランタイム</p>
+</td><td colspan="1" rowspan="1"><p>Node.js 8.10</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="s208" src="img/32ca8b77a516a0d0.png"></p>
+<h2 is-upgraded>5-2. Lambda関数を作成する</h2>
+<p>Lambda関数を作成します。［関数の作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s209" src="img/616766047a12967.png"></p>
+<p>各項目を埋めていきます</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p>①関数名</p>
+</td><td colspan="1" rowspan="1"><p>AmazonConnect-Alexa</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>②ランタイム</p>
+</td><td colspan="1" rowspan="1"><p>Node.js 8.10</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>③実行ロール</p>
+</td><td colspan="1" rowspan="1"><p>AWSポリシーテンプレートから新しいロールを作成</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>④ロール名</p>
+</td><td colspan="1" rowspan="1"><p>AmazonConnect-Alexa-Role</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>⑤ポリシーテンプレート</p>
+</td><td colspan="1" rowspan="1"><p>基本的なLambda@Edgeのアクセス権限</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="s210" src="img/6df4a7e2e51b61a6.png"></p>
+<h2 is-upgraded>5-3. ポリシーの権限追加</h2>
+<p>関数が作成できたら、下にスクロールして、実行ロールという部分を探してください。<br>そこにある<strong>AmazonConnect-Alexa-Roleロールを表示</strong>という部分をクリックします。</p>
+<p class="image-container"><img alt="s211" src="img/c844642b36c8d866.png"></p>
+<p>［インラインポリシーの追加］をクリックします。</p>
+<p class="image-container"><img alt="s212" src="img/9949962e0df269e.png"></p>
+<p>サービスを展開して、検索窓に「Connect」と入れて検索します。出てきた［Connect］をクリックします。</p>
+<p class="image-container"><img alt="s213" src="img/8b1ccf8fd28152af.png"></p>
+<p>アクションのアクセスレベルにある「書き込み」部分を展開して、その中にある<code>StartOutboundVoiceContact</code>のチェックを入れます。</p>
+<p class="image-container"><img alt="s214" src="img/477078943385911.png"></p>
+<p>すべてのリソースを選択して、右下の［ポリシーの確認］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s215" src="img/9ee73d2d9d7fa867.png"></p>
+<p>ポリシー名を入力します。<code>AmazonConnect-Alexa-Policy</code>としました。右下の［ポリシーの作成］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s216" src="img/965d02a825faddac.png"></p>
+<p>Lambda画面に戻り、画面更新するとAmazon Connectの権限が追加されます。</p>
+<h2 is-upgraded>5-4. AlexaとLambdaと紐付ける</h2>
+<p>Lambda実行するためのトリガーとしてAlexa Skills Kitを紐付けます。<br>左側メニューにAlexa Skills Kitという部分があるので、クリックして追加します。</p>
+<p class="image-container"><img alt="s217" src="img/1108c0cb2ff0e719.png"></p>
+<p>alexa developer consoleのエンドポイントをクリックします。AWS LambdaのARNを選択して、スキルIDをコピーします。<br>Lambda側にあるスキルIDに貼り付けます。貼り付けたら、［追加］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s218" src="img/fce2519a9d268c2.png"></p>
+<p>右上の［保存］ボタンをクリックします。Lambda側のARNの値をコピーして、alexa developer consoleのデフォルトの地域LambdaのARNの値を貼り付けます。</p>
+<p>貼り付けたら、［エンドポイントを保存］をクリックします。</p>
+<p class="image-container"><img alt="s219" src="img/e0af65db11b5398b.png"></p>
+<h2 is-upgraded>5-5. Lambdaレイヤーを適用する</h2>
+<p>5-1で作成したLambdaレイヤーを関数に適用します。<br>Layers部分をクリックして、［レイヤーの追加］をクリックします。</p>
+<p class="image-container"><img alt="s220" src="img/692f35a3261e76d.png"></p>
+<p>レイヤーの名前とバージョンを指定して、［追加］ボタンをクリックします。</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>ASK-SDK</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>バージョン</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="s221" src="img/8b714c1485f970f2.png"></p>
+<h2 is-upgraded>5-6. index.jsを編集する</h2>
+<p>AmazonConnect-Alexa部分をクリックして、下にあるindex.jsのファイルを編集します。</p>
+<p>index.jsの内容は下記からコピーしてください。<br><a href="https://raw.githubusercontent.com/gaomar/tokyo-gaomar-01/master/files/index.js" target="_blank">https://raw.githubusercontent.com/gaomar/tokyo-gaomar-01/master/files/index.js</a></p>
+<p class="image-container"><img alt="s222" src="img/f670a4c6aefabee9.png"></p>
+<pre><code>const Alexa = require(&#39;ask-sdk-core&#39;);
+const AWS = require(&#39;aws-sdk&#39;);
+var connect = new AWS.Connect();
+
+// スキル起動時
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;LaunchRequest&#39;;
+    },
+    handle(handlerInput) {
+        const speechText = &#39;メニューをタップしてください。&#39;;
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .addDirective({
+                type : &#39;Alexa.Presentation.APL.RenderDocument&#39;,
+                version: &#39;1.0&#39;,
+                token: &#34;token&#34;,
+                document: require(&#39;./apl_top.json&#39;)
+            })            
+            .getResponse();
+    }
+};
+
+// 画面タッチ処理
+// シミュレーターではonPressが反応し、実機ではPressが反応するため2つ書いておく
+const TouchEventHandler = {
+    canHandle(handlerInput) {
+    return ((Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;Alexa.Presentation.APL.UserEvent&#39; &amp;&amp;
+        (handlerInput.requestEnvelope.request.source.handler === &#39;Press&#39; || 
+        handlerInput.requestEnvelope.request.source.handler === &#39;onPress&#39;)));
+    },
+    async handle(handlerInput) {
+        
+        // 電話をかける
+        CallAction();
+        
+        const speechText = &#39;電話をかけます。&#39;
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    }
+};
+
+// 電話をかける処理
+function CallAction() {
+    var params = {
+        InstanceId: process.env.INSTANCEID,
+        ContactFlowId: process.env.CONTACTFLOWID,
+        DestinationPhoneNumber: process.env.PHONENUMBER,
+        SourcePhoneNumber: process.env.SOURCEPHONENUMBER
+    };
+
+    var calling =connect.startOutboundVoiceContact(params, function(err, data) {
+        if (err) {
+          console.log(err);
+        }
+    });
+}
+
+// ヘルプ
+const CallIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;IntentRequest&#39;
+            &amp;&amp; Alexa.getIntentName(handlerInput.requestEnvelope) === &#39;CallIntent&#39;;
+    },
+    handle(handlerInput) {
+        
+        // 電話をかける
+        CallAction();
+        
+        const speechText = &#39;電話をかけます。&#39;;
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    }
+};
+
+// ヘルプ
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;IntentRequest&#39;
+            &amp;&amp; Alexa.getIntentName(handlerInput.requestEnvelope) === &#39;AMAZON.HelpIntent&#39;;
+    },
+    handle(handlerInput) {
+        const speechText = &#39;メモを保存する場合は「メモをセーブ」。メモを聞く場合は「メモをロード」と言ってください。それではどうぞ！&#39;;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+    }
+};
+
+// キャンセルor終了と発話された
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;IntentRequest&#39;
+            &amp;&amp; (Alexa.getIntentName(handlerInput.requestEnvelope) === &#39;AMAZON.CancelIntent&#39;
+                || Alexa.getIntentName(handlerInput.requestEnvelope) === &#39;AMAZON.StopIntent&#39;);
+    },
+    handle(handlerInput) {
+        const speechText = &#39;バイバイ！またね！&#39;;
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    }
+};
+
+// セッション切れ
+const SessionEndedRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;SessionEndedRequest&#39;;
+    },
+    handle(handlerInput) {
+        // Any cleanup logic goes here.
+        return handlerInput.responseBuilder.getResponse();
+    }
+};
+
+// エラー時
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`~~~~ Error handled: ${error.message}`);
+        const speechText = `不明なエラーが出ました`;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+    }
+};
+
+// 各種Handlerを登録する
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        HelpIntentHandler,
+        CallIntentHandler,
+        TouchEventHandler,
+        CancelAndStopIntentHandler,
+        SessionEndedRequestHandler)
+    .addErrorHandlers(
+        ErrorHandler)
+    .lambda();
+
+</code></pre>
+<h2 is-upgraded>5-7. APLファイルを新規作成する</h2>
+<p>index.jsで指定しているapl_top.jsonファイルを新規作成します。<br>＋マークをクリックして、ファイルを追加します。</p>
+<p class="image-container"><img alt="s223" src="img/aab12029be711372.png"></p>
+<p>下記ファイルをコピペしてください。</p>
+<p><a href="https://raw.githubusercontent.com/gaomar/tokyo-gaomar-01/master/files/apl_top.json" target="_blank">https://raw.githubusercontent.com/gaomar/tokyo-gaomar-01/master/files/apl_top.json</a></p>
+<pre><code>{
+    &#34;type&#34;: &#34;APL&#34;,
+    &#34;version&#34;: &#34;1.0&#34;,
+    &#34;theme&#34;: &#34;dark&#34;,
+    &#34;import&#34;: [],
+    &#34;resources&#34;: [],
+    &#34;styles&#34;: {},
+    &#34;layouts&#34;: {},
+    &#34;mainTemplate&#34;: {
+        &#34;parameters&#34;: [
+            &#34;payload&#34;
+        ],
+        &#34;items&#34;: [
+            {
+                &#34;type&#34;: &#34;Container&#34;,
+                &#34;direction&#34;: &#34;column&#34;,
+                &#34;item&#34;: [
+                    {
+                        &#34;type&#34;: &#34;Text&#34;,
+                        &#34;textAlign&#34;: &#34;center&#34;,
+                        &#34;paddingTop&#34;: &#34;15vh&#34;,
+                        &#34;text&#34;: &#34;メニュー選択&#34;
+                    },
+                    {
+                        &#34;type&#34;: &#34;Container&#34;,
+                        &#34;direction&#34;: &#34;row&#34;,
+                        &#34;alignItems&#34;: &#34;center&#34;,
+                        &#34;justifyContent&#34;: &#34;center&#34;,
+                        &#34;width&#34;: &#34;100vw&#34;,
+                        &#34;height&#34;: &#34;50vh&#34;,
+                        &#34;paddingTop&#34;: &#34;10vh&#34;,
+                        &#34;items&#34;: [
+                            {
+                                &#34;type&#34;: &#34;Container&#34;,
+                                &#34;item&#34;: [
+                                    {
+                                        &#34;type&#34;: &#34;TouchWrapper&#34;,
+                                        &#34;onPress&#34;: {
+                                            &#34;type&#34;: &#34;SendEvent&#34;,
+                                            &#34;arguments&#34;: [
+                                                &#34;save&#34;
+                                            ]
+                                        },
+                                        &#34;item&#34;: [
+                                            {
+                                                &#34;type&#34;: &#34;Frame&#34;,
+                                                &#34;borderRadius&#34;: 10,
+                                                &#34;backgroundColor&#34;: &#34;green&#34;,
+                                                &#34;item&#34;: [
+                                                    {
+                                                        &#34;type&#34;: &#34;Text&#34;,
+                                                        &#34;width&#34;: &#34;60vw&#34;,
+                                                        &#34;height&#34;: &#34;20vh&#34;,
+                                                        &#34;textAlign&#34;: &#34;center&#34;,
+                                                        &#34;textAlignVertical&#34;: &#34;center&#34;,
+                                                        &#34;fontSize&#34;: &#34;7vw&#34;,
+                                                        &#34;text&#34;: &#34;電話をかける&#34;
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+</code></pre>
+<p>コードをコピペできたら、ファイルを保存します。ファイル名は「apl_top.json」としてください。［Save］ボタンをクリックします。</p>
+<p>※ファイル名はスペルミスしないように気をつけてください</p>
+<p class="image-container"><img alt="s224" src="img/c169ce51cf372308.png"></p>
+<h2 is-upgraded>5-8. LambdaからAmazon Connectの環境を設定する</h2>
+<p>index.jsに環境変数として設定している項目を埋めていきます。</p>
+<p>※キー名はスペルミスをしないように気をつけてください</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p>INSTANCEID</p>
+</td><td colspan="1" rowspan="1"><p>下線部の赤い値</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>CONTACTFLOWID</p>
+</td><td colspan="1" rowspan="1"><p>下線部の青い値</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>PHONENUMBER</p>
+</td><td colspan="1" rowspan="1"><p>かけたい電話番号 <br>※+81をつけます（かけたい電話番号を間違えないように！）</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>SOURCEPHONENUMBER</p>
+</td><td colspan="1" rowspan="1"><p>Amazon Connectで取得した電話番号</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="s225" src="img/30277757ced13cb3.png"></p>
+<p>右上の［保存］ボタンをクリックします。</p>
+<p class="image-container"><img alt="s226" src="img/b733ad8079b21f7b.png"></p>
+<h2 is-upgraded>5-7. シミュレーターで確認する</h2>
+<p>alexa developer console画面を表示して、［テスト］タブをクリックします。<br>プルダウンメニューから「開発中」を選択して、4-1で設定した呼び出し名を入力してスキルを起動させます。</p>
+<p>［電話をかける］ボタンをクリックすると、指定した番号に電話がかかってきます。</p>
+<p class="image-container"><img alt="s227" src="img/58800a521af46fbd.png"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

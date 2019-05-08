@@ -1,0 +1,71 @@
+{
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "import": [],
+    "resources": [],
+    "styles": {},
+    "layouts": {},
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [
+            {
+                "type": "Container",
+                "direction": "column",
+                "item": [
+                    {
+                        "type": "Text",
+                        "textAlign": "center",
+                        "paddingTop": "15vh",
+                        "text": "メニュー選択"
+                    },
+                    {
+                        "type": "Container",
+                        "direction": "row",
+                        "alignItems": "center",
+                        "justifyContent": "center",
+                        "width": "100vw",
+                        "height": "50vh",
+                        "paddingTop": "10vh",
+                        "items": [
+                            {
+                                "type": "Container",
+                                "item": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": {
+                                            "type": "SendEvent",
+                                            "arguments": [
+                                                "save"
+                                            ]
+                                        },
+                                        "item": [
+                                            {
+                                                "type": "Frame",
+                                                "borderRadius": 10,
+                                                "backgroundColor": "green",
+                                                "item": [
+                                                    {
+                                                        "type": "Text",
+                                                        "width": "60vw",
+                                                        "height": "20vh",
+                                                        "textAlign": "center",
+                                                        "textAlignVertical": "center",
+                                                        "fontSize": "7vw",
+                                                        "text": "電話をかける"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
