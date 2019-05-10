@@ -32,7 +32,7 @@ const TouchEventHandler = {
     async handle(handlerInput) {
         
         // 電話をかける
-        CallAction();
+        await CallAction();
         
         const speechText = '電話をかけます。'
         return handlerInput.responseBuilder
@@ -43,18 +43,25 @@ const TouchEventHandler = {
 
 // 電話をかける処理
 function CallAction() {
-    var params = {
-        InstanceId: process.env.INSTANCEID,
-        ContactFlowId: process.env.CONTACTFLOWID,
-        DestinationPhoneNumber: process.env.PHONENUMBER,
-        SourcePhoneNumber: process.env.SOURCEPHONENUMBER
-    };
-
-    var calling =connect.startOutboundVoiceContact(params, function(err, data) {
-        if (err) {
-          console.log(err);
-        }
-    });
+    return new Promise(((resolve, reject) => {
+    
+        var params = {
+            InstanceId: process.env.INSTANCEID,
+            ContactFlowId: process.env.CONTACTFLOWID,
+            DestinationPhoneNumber: process.env.PHONENUMBER,
+            SourcePhoneNumber: process.env.SOURCEPHONENUMBER
+        };
+    
+        connect.startOutboundVoiceContact(params, function(err, data) {
+            if (err) {
+                console.log(err);
+                reject();
+            } else {
+                resolve(data);
+            }
+        });
+        
+    }));
 }
 
 // ヘルプ
@@ -63,10 +70,10 @@ const CallIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'CallIntent';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         
         // 電話をかける
-        CallAction();
+        await CallAction();
         
         const speechText = '電話をかけます。';
         return handlerInput.responseBuilder
