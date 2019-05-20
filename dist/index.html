@@ -294,7 +294,7 @@ function CallAction() {
     }));
 }
 
-// ヘルプ
+// コール処理
 const CallIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === &#39;IntentRequest&#39;
@@ -319,7 +319,7 @@ const HelpIntentHandler = {
             &amp;&amp; Alexa.getIntentName(handlerInput.requestEnvelope) === &#39;AMAZON.HelpIntent&#39;;
     },
     handle(handlerInput) {
-        const speechText = &#39;メモを保存する場合は「メモをセーブ」。メモを聞く場合は「メモをロード」と言ってください。それではどうぞ！&#39;;
+        const speechText = &#39;電話をかける場合は、ボタンを押してください。&#39;;
 
         return handlerInput.responseBuilder
             .speak(speechText)
